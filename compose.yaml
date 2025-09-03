@@ -1,0 +1,32 @@
+networks:
+  elastic:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: 127.0.0.1
+
+volumes:
+  elasticsearch8:
+
+services:
+  elasticsearch8:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - http.cors.allow-methods=OPTIONS, HEAD, GET, POST, PUT, DELETE
+      - http.cors.allow-headers=X-Requested-With, X-Auth-Token, Content-Type, Content-Length
+      - "ES_JAVA_OPTS=-Xms128m -Xmx1024m"
+    volumes:
+      - elasticsearch8:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
